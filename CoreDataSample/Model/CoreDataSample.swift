@@ -14,5 +14,7 @@ class CoreDataSample: NSManagedObject {
     
     @NSManaged var name: String?
     @NSManaged var phonenumber: String?
+    
+    
 }
 

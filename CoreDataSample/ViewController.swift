@@ -17,7 +17,13 @@ class ViewController: UIViewController, ManagedObjectContextDependentType{
     
     var eBookData: [EBook] = []
     
+    
     @IBAction func NewEntryAction(_ sender: Any) {
+        
+        let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
+        self.navigationController?.pushViewController(entryVC, animated: true)
+        
+        
     }
     
     
@@ -116,8 +122,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         catch {
             print("Nodata available")
         }
-        
-        
+
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -125,6 +130,11 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         print("selected item is\(indexPath.row)")
         
         let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
+        
+        let rowData = eBookData[indexPath.row]
+        
+        entryVC.selectedInfo = [rowData]
+        
         self.navigationController?.pushViewController(entryVC, animated: true)
         
         

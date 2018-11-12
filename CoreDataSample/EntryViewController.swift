@@ -11,6 +11,11 @@ import CoreData
 
 class EntryViewController: UIViewController {
 
+//    var selectedInfo = []
+    
+//    var selectedInfo:[EBook] = []
+    var selectedInfo: [EBook] = []
+    
     @IBOutlet weak var nameTextField: UITextField!
     
     @IBOutlet weak var phoneNumber: UITextField!
@@ -32,17 +37,26 @@ class EntryViewController: UIViewController {
             
             let myEntity = NSEntityDescription.entity(forEntityName: "EBook", in: managedContext)
             let eBook = NSManagedObject(entity: myEntity!, insertInto: managedContext)
-            eBook.setValue("sample", forKey: "name")
-            eBook.setValue("9581407050", forKey: "phonenumber")
+            eBook.setValue(tName, forKey: "name")
+            eBook.setValue(tPhoneNumber, forKey: "phonenumber")
             
-            do {try managedContext.save()} catch let error as NSError{
+            do {try managedContext.save()
+                self.navigationController?.popViewController(animated: true)
+            } catch let error as NSError{
                 print("Could not save. \(error), \(error.userInfo)")
             }
         }else {
-            let alert = UIAlertController.init(title: "", message: "Please enter valid user name and password", preferredStyle: .alert)
-           
+            let alert = UIAlertController.init(title: "Alert", message: "Please enter valid user name and password", preferredStyle: .alert)
+            
+            let action1 = UIAlertAction(title: "OK", style: .default) { (action:UIAlertAction) in
+                print("default")
+            }
+
+            
+            alert.addAction(action1)
             self.present(alert, animated: true, completion: nil)
 
+            
         }
         
         
@@ -53,10 +67,46 @@ class EntryViewController: UIViewController {
     }
     
     
+    /*
+    
+     let alertController = UIAlertController(title: "Alert", message: "This is an alert.", preferredStyle: .alert)
+     
+     let action1 = UIAlertAction(title: "Default", style: .default) { (action:UIAlertAction) in
+     print("You've pressed default");
+     }
+     
+     let action2 = UIAlertAction(title: "Cancel", style: .cancel) { (action:UIAlertAction) in
+     print("You've pressed cancel");
+     }
+     
+     let action3 = UIAlertAction(title: "Destructive", style: .destructive) { (action:UIAlertAction) in
+     print("You've pressed the destructive");
+     }
+     
+     alertController.addAction(action1)
+     alertController.addAction(action2)
+     alertController.addAction(action3)
+     self.present(alertController, animated: true, completion: nil)
+
+    */
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+
+//        if selectedInfo.count > 0 {
+//            self.nameTextField.text = selectedInfo.name
+//            self.phoneNumber.text = selectedInfo.phonenumber
+//        }
+        
+        
+        print(selectedInfo)
+        
+//        cell.titleCellLabel.text = rowData.name
+//        cell.subTitleCellLabel.text = rowData.phonenumber
+        
     }
 
     override func didReceiveMemoryWarning() {

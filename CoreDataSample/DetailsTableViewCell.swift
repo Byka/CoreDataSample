@@ -15,7 +15,7 @@ class DetailsTableViewCell: UITableViewCell, ManagedObjectContextDependentType {
 
     @IBOutlet weak var titleCellLabel: UILabel!
     @IBOutlet weak var subTitleCellLabel: UILabel!
-    
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
