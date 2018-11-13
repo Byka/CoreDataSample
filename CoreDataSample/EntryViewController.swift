@@ -15,6 +15,8 @@ class EntryViewController: UIViewController {
     
 //    var selectedInfo:[EBook] = []
     var selectedInfo: [EBook] = []
+    var isEdit: Bool = false
+    var index : NSInteger = 0
     
     @IBOutlet weak var nameTextField: UITextField!
     
@@ -66,29 +68,54 @@ class EntryViewController: UIViewController {
         
     }
     
+    @IBOutlet weak var editButton: UIButton!
     
-    /*
+    @IBAction func editButtonAction(_ sender: Any) {
+        
+        self.updateData()
+    }
+  
     
-     let alertController = UIAlertController(title: "Alert", message: "This is an alert.", preferredStyle: .alert)
-     
-     let action1 = UIAlertAction(title: "Default", style: .default) { (action:UIAlertAction) in
-     print("You've pressed default");
-     }
-     
-     let action2 = UIAlertAction(title: "Cancel", style: .cancel) { (action:UIAlertAction) in
-     print("You've pressed cancel");
-     }
-     
-     let action3 = UIAlertAction(title: "Destructive", style: .destructive) { (action:UIAlertAction) in
-     print("You've pressed the destructive");
-     }
-     
-     alertController.addAction(action1)
-     alertController.addAction(action2)
-     alertController.addAction(action3)
-     self.present(alertController, animated: true, completion: nil)
+    func updateData() {
+        
+        //As we know that container is set up in the AppDelegate so we need to refer to that container
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        //We need to create a context from this container
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest:NSFetchRequest<NSFetchRequestResult> = NSFetchRequest.init(entityName: "EBook")
+        fetchRequest.predicate = NSPredicate(format: "phonenumber = %@")
+        
+        let name: String = nameTextField.text!
+        let phoneNumber: String = self.phoneNumber.text!
+        
+        
+        do {
+            let test: [EBook] = try managedContext.fetch(EBook.fetchRequest())
+            
+            
+            let objectUpdate = test[index] as! NSManagedObject
+            
+            objectUpdate.setValue(name, forKey: "name")
+            objectUpdate.setValue(phoneNumber, forKey: "phonenumber")
 
-    */
+            
+            do {
+                try managedContext.save()
+                self.navigationController?.popViewController(animated: true)
+            }catch{
+                print("unable to save \(error)")
+            }
+        }catch{
+            print(error)
+        }
+        
+        
+    }
+    
     
     
     override func viewDidLoad() {
@@ -96,16 +123,24 @@ class EntryViewController: UIViewController {
 
         // Do any additional setup after loading the view.
 
-//        if selectedInfo.count > 0 {
-//            self.nameTextField.text = selectedInfo.name
-//            self.phoneNumber.text = selectedInfo.phonenumber
-//        }
+
         
         
         print(selectedInfo)
+
+        if selectedInfo.count > 0 {
+            self.nameTextField.text = (selectedInfo[0].name as! String)
+            self.phoneNumber.text = (selectedInfo[0].phonenumber as! String)
+        }
+
         
-//        cell.titleCellLabel.text = rowData.name
-//        cell.subTitleCellLabel.text = rowData.phonenumber
+        if isEdit {
+            self.saveButton.isHidden = true
+            self.editButton.isHidden = false
+        }else{
+            self.saveButton.isHidden = false
+            self.editButton.isHidden = true
+        }
         
     }
 

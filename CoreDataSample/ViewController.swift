@@ -18,16 +18,17 @@ class ViewController: UIViewController, ManagedObjectContextDependentType{
     var eBookData: [EBook] = []
     
     
-    @IBAction func NewEntryAction(_ sender: Any) {
+    @IBAction func NewEntryAction(_ sender: UIBarButtonItem) {
         
         let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
-        self.navigationController?.pushViewController(entryVC, animated: true)
+        entryVC.isEdit = false
+ self.navigationController?.pushViewController(entryVC, animated: true)
         
         
     }
     
     
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -130,6 +131,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         print("selected item is\(indexPath.row)")
         
         let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
+        
+ 
+            entryVC.isEdit = true
+       entryVC.index = indexPath.row
         
         let rowData = eBookData[indexPath.row]
         
