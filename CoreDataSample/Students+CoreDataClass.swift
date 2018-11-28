@@ -105,10 +105,6 @@ public class Students: NSManagedObject {
                 print(test)
             }
             
-            
-            
-            
-            
            
         }catch{
             
