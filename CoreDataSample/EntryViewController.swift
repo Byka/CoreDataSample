@@ -7,16 +7,14 @@
 //
 
 import UIKit
-import CoreData
 
 class EntryViewController: UIViewController {
 
 //    var selectedInfo = []
     
 //    var selectedInfo:[EBook] = []
-    var selectedInfo: [EBook] = []
     var isEdit: Bool = false
-    var index : NSInteger = 0
+    var index : NSInteger = -1
     
     @IBOutlet weak var nameTextField: UITextField!
     
@@ -27,26 +25,23 @@ class EntryViewController: UIViewController {
     @IBAction func saveButtonAction(_ sender: Any) {
         
         
-        
+        //Students.inserStudentInfo()
+
         
         let tName = self.nameTextField.text
         let tPhoneNumber = self.phoneNumber.text
         
         if (tName?.count)! > 2 && tPhoneNumber?.count == 10 {
             
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate  else {return}
-            let managedContext = appDelegate.persistentContainer.viewContext
+            var inputRecord: [String: Any] = [:]
             
-            let myEntity = NSEntityDescription.entity(forEntityName: "EBook", in: managedContext)
-            let eBook = NSManagedObject(entity: myEntity!, insertInto: managedContext)
-            eBook.setValue(tName, forKey: "name")
-            eBook.setValue(tPhoneNumber, forKey: "phonenumber")
             
-            do {try managedContext.save()
-                self.navigationController?.popViewController(animated: true)
-            } catch let error as NSError{
-                print("Could not save. \(error), \(error.userInfo)")
-            }
+            inputRecord = ["name":tName, "phoneNumber": Int(tPhoneNumber!)]
+            
+            Students.inserStudentInfo(inputData: inputRecord)
+            self.navigationController?.popViewController(animated: true)
+
+            
         }else {
             let alert = UIAlertController.init(title: "Alert", message: "Please enter valid user name and password", preferredStyle: .alert)
             
@@ -72,8 +67,55 @@ class EntryViewController: UIViewController {
     
     @IBAction func editButtonAction(_ sender: Any) {
         
-        self.updateData()
+        
+
+        let tName: String = self.nameTextField.text!
+        let tPhoneNumber = self.phoneNumber.text
+        
+        var inputRecord: [String: Any] = [:]
+       
+        inputRecord = ["name":tName, "phoneNumber": Int(tPhoneNumber!)]
+        
+        
+        Students.fetchSelectedRecord(updatedData: inputRecord, index: index)
+        
+        self.navigationController?.popViewController(animated: true)
+        
+        
+        
+
+        
     }
+    
+    
+    /*
+    
+    func searchForGivenData(searchKey: String) {
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate  else {return}
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        
+        
+        
+            var fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "EBook")
+            fetchRequest.predicate = NSPredicate(format: "name == %@", searchKey)
+            
+            var results: [NSManagedObject] = []
+            
+            do {
+                results = try managedContext.fetch(fetchRequest)
+            }
+            catch {
+                print("error executing fetch request: \(error)")
+            }
+            
+             print(results)
+        
+        
+        
+    }
+    
   
     
     func updateData() {
@@ -115,7 +157,7 @@ class EntryViewController: UIViewController {
         
         
     }
-    
+    */
     
     
     override func viewDidLoad() {
@@ -126,11 +168,11 @@ class EntryViewController: UIViewController {
 
         
         
-        print(selectedInfo)
 
-        if selectedInfo.count > 0 {
-            self.nameTextField.text = (selectedInfo[0].name as! String)
-            self.phoneNumber.text = (selectedInfo[0].phonenumber as! String)
+        if index > -1 {
+            self.nameTextField.text = (CoredataStack.shared.studentList[index].name as! String)
+             let phoneNumber: String = String(describing : CoredataStack.shared.studentList[index].phonenumber)
+            self.phoneNumber.text = phoneNumber
         }
 
         
@@ -148,16 +190,5 @@ class EntryViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

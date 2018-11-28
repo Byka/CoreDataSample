@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class DetailsTableViewCell: UITableViewCell, ManagedObjectContextDependentType {
+class DetailsTableViewCell: UITableViewCell {
     
     var managedObjectContext: NSManagedObjectContext!
 
@@ -17,15 +17,8 @@ class DetailsTableViewCell: UITableViewCell, ManagedObjectContextDependentType {
     @IBOutlet weak var subTitleCellLabel: UILabel!
 
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
+    
+    
+    
 
 }

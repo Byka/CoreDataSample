@@ -9,13 +9,13 @@
 import UIKit
 import CoreData
 
-class ViewController: UIViewController, ManagedObjectContextDependentType{
+class ViewController: UIViewController{
 
     @IBOutlet weak var tableView: UITableView!
     
-    var managedObjectContext: NSManagedObjectContext!
+    //var managedObjectContext: NSManagedObjectContext!
     
-    var eBookData: [EBook] = []
+    //var eBookData: [EBook] = []
     
     
     @IBAction func NewEntryAction(_ sender: UIBarButtonItem) {
@@ -27,6 +27,17 @@ class ViewController: UIViewController, ManagedObjectContextDependentType{
         
     }
     
+    @IBAction func searchRecordsAction(_ sender: Any) {
+        
+        
+        let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
+        entryVC.isEdit = true
+        self.navigationController?.pushViewController(entryVC, animated: true)
+        
+        
+        
+        
+    }
     
 
     override func viewDidLoad() {
@@ -35,124 +46,83 @@ class ViewController: UIViewController, ManagedObjectContextDependentType{
         //let mainContext = createMainContext()
         
         
-        /*
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate  else {return}
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        let myEntity = NSEntityDescription.entity(forEntityName: "EBook", in: managedContext)
-        let eBook = NSManagedObject(entity: myEntity!, insertInto: managedContext)
-        
-        eBook.setValue("sample", forKey: "name")
-        eBook.setValue("9581407050", forKey: "phonenumber")
-        
-        do {try managedContext.save()} catch let error as NSError{
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-        */
-
-        
-//        let myentity = NSEntityDescription.insertNewObject(forEntityName: "CoreDataSample", into: mainContext) as! CoreDataSample
-//        myentity.name = "Srinivasa"
-//        myentity.phonenumber = "9581407050"
-//
-//        do {try mainContext.save()} catch _{}
-        
         
     }
 
     override func viewWillAppear(_ animated: Bool) {
         
-        //get the data from coredata
-        getData()
+
         
         //reload the table data
-        tableView.reloadData()
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate  else {return}
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        if editingStyle == .delete {
-            let task = eBookData[indexPath.row]
-            managedContext.delete(task)
-            
-            appDelegate.saveContext()
-            
-            do {
-                getData()
-            } catch {
-                print("Fetching failed")
-            }
-            tableView.reloadData()
-
+        DispatchQueue.main.async {
+            CoredataStack.shared.studentList = Students.getStudentsList()
+            print(CoredataStack.shared.studentList)
+            self.tableView.reloadData()
         }
     }
     
-
+   
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return eBookData.count
+        return CoredataStack.shared.studentList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DetailsTableViewCell", for: indexPath) as! DetailsTableViewCell
         
+        cell.titleCellLabel.text = CoredataStack.shared.studentList[indexPath.row].name
+        let phoneNumber: String = String(describing : CoredataStack.shared.studentList[indexPath.row].phonenumber)
         
-        
-        let rowData = eBookData[indexPath.row]
-        
-        cell.titleCellLabel.text = rowData.name
-        cell.subTitleCellLabel.text = rowData.phonenumber
+        cell.subTitleCellLabel.text = phoneNumber
         
         return cell
         
     }
     
     
-    func getData() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate  else {return}
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        do{
-        eBookData = try managedContext.fetch(EBook.fetchRequest())
-        }
-        catch {
-            print("Nodata available")
-        }
-
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        print("selected item is\(indexPath.row)")
         
         let entryVC = storyboard?.instantiateViewController(withIdentifier: "EntryViewController") as! EntryViewController
         
- 
-            entryVC.isEdit = true
-       entryVC.index = indexPath.row
         
-        let rowData = eBookData[indexPath.row]
+        entryVC.isEdit = true
+        entryVC.index = indexPath.row
         
-        entryVC.selectedInfo = [rowData]
+        
+        
+        
         
         self.navigationController?.pushViewController(entryVC, animated: true)
-        
-        
     }
-    
-    
-    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 78
     }
     
     
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete {
+            Students.removeSelectedRecord(index: indexPath.row)
+            
+            do {
+                DispatchQueue.main.async {
+                    CoredataStack.shared.studentList = Students.getStudentsList()
+                    print(CoredataStack.shared.studentList)
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print("Fetching failed")
+                
+            }
+            tableView.reloadData()
+        }
+        
+    }
     
 }
 

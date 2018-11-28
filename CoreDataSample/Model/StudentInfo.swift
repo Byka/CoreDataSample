@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+
+struct StudentInfo {
+    let name: String
+    let phoneNumber: Int32
+    
+}
+
